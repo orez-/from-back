@@ -210,62 +210,62 @@ macro_rules! idx {
     // we allow specifying a `idx!(..)` for completeness, but..
     // ..there's no need to create a custom type for it.
     ( .. ) => { .. };
-    ( $left:tt..$right:tt ) => { SeqRange {
-        start: SeqIndex::FromFront($left),
-        end: SeqIndex::FromFront($right),
+    ( $left:tt..$right:tt ) => { $crate::SeqRange {
+        start: $crate::SeqIndex::FromFront($left),
+        end: $crate::SeqIndex::FromFront($right),
     } };
-    ( ^$left:tt..$right:tt ) => { SeqRange {
-        start: SeqIndex::FromBack($left),
-        end: SeqIndex::FromFront($right),
+    ( ^$left:tt..$right:tt ) => { $crate::SeqRange {
+        start: $crate::SeqIndex::FromBack($left),
+        end: $crate::SeqIndex::FromFront($right),
     } };
-    ( $left:tt..^$right:tt ) => { SeqRange {
-        start: SeqIndex::FromFront($left),
-        end: SeqIndex::FromBack($right),
+    ( $left:tt..^$right:tt ) => { $crate::SeqRange {
+        start: $crate::SeqIndex::FromFront($left),
+        end: $crate::SeqIndex::FromBack($right),
     } };
-    ( ^$left:tt..^$right:tt ) => { SeqRange {
-        start: SeqIndex::FromBack($left),
-        end: SeqIndex::FromBack($right),
+    ( ^$left:tt..^$right:tt ) => { $crate::SeqRange {
+        start: $crate::SeqIndex::FromBack($left),
+        end: $crate::SeqIndex::FromBack($right),
     } };
-    ( $left:tt.. ) => { SeqRangeFrom {
-        start: SeqIndex::FromFront($left),
+    ( $left:tt.. ) => { $crate::SeqRangeFrom {
+        start: $crate::SeqIndex::FromFront($left),
     } };
-    ( ^$left:tt.. ) => { SeqRangeFrom {
-        start: SeqIndex::FromBack($left),
+    ( ^$left:tt.. ) => { $crate::SeqRangeFrom {
+        start: $crate::SeqIndex::FromBack($left),
     } };
-    ( $left:tt..=$right:tt ) => { SeqRangeInclusive {
-        start: SeqIndex::FromFront($left),
-        end: SeqIndex::FromFront($right),
+    ( $left:tt..=$right:tt ) => { $crate::SeqRangeInclusive {
+        start: $crate::SeqIndex::FromFront($left),
+        end: $crate::SeqIndex::FromFront($right),
     } };
-    ( ^$left:tt..=$right:tt ) => { SeqRangeInclusive {
-        start: SeqIndex::FromBack($left),
-        end: SeqIndex::FromFront($right),
+    ( ^$left:tt..=$right:tt ) => { $crate::SeqRangeInclusive {
+        start: $crate::SeqIndex::FromBack($left),
+        end: $crate::SeqIndex::FromFront($right),
     } };
-    ( $left:tt..=^$right:tt ) => { SeqRangeInclusive {
-        start: SeqIndex::FromFront($left),
-        end: SeqIndex::FromBack($right),
+    ( $left:tt..=^$right:tt ) => { $crate::SeqRangeInclusive {
+        start: $crate::SeqIndex::FromFront($left),
+        end: $crate::SeqIndex::FromBack($right),
     } };
-    ( ^$left:tt..=^$right:tt ) => { SeqRangeInclusive {
-        start: SeqIndex::FromBack($left),
-        end: SeqIndex::FromBack($right),
+    ( ^$left:tt..=^$right:tt ) => { $crate::SeqRangeInclusive {
+        start: $crate::SeqIndex::FromBack($left),
+        end: $crate::SeqIndex::FromBack($right),
     } };
-    ( ..$right:tt ) => { SeqRange {
+    ( ..$right:tt ) => { $crate::SeqRange {
         start: Default::default(),
-        end: SeqIndex::FromFront($right),
+        end: $crate::SeqIndex::FromFront($right),
     } };
-    ( ..^$right:tt ) => { SeqRange {
+    ( ..^$right:tt ) => { $crate::SeqRange {
         start: Default::default(),
-        end: SeqIndex::FromBack($right),
+        end: $crate::SeqIndex::FromBack($right),
     } };
-    ( ..=$right:tt ) => { SeqRangeInclusive {
+    ( ..=$right:tt ) => { $crate::SeqRangeInclusive {
         start: Default::default(),
-        end: SeqIndex::FromFront($right),
+        end: $crate::SeqIndex::FromFront($right),
     } };
-    ( ..=^$right:tt ) => { SeqRangeInclusive {
+    ( ..=^$right:tt ) => { $crate::SeqRangeInclusive {
         start: Default::default(),
-        end: SeqIndex::FromBack($right),
+        end: $crate::SeqIndex::FromBack($right),
     } };
-    ( ^$x:expr ) => { SeqIndex::FromBack($x) };
-    ( $x:expr ) => { SeqIndex::FromFront($x) };
+    ( ^$x:expr ) => { $crate::SeqIndex::FromBack($x) };
+    ( $x:expr ) => { $crate::SeqIndex::FromFront($x) };
 }
 
 // ===
