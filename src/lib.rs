@@ -86,8 +86,8 @@ impl<T> Index<MyRange<usize>> for [T] {
 }
 
 #[macro_export]
-macro_rules! range {
-    // we allow specifying a `range!(..)` for completeness, but..
+macro_rules! idx {
+    // we allow specifying a `idx!(..)` for completeness, but..
     // ..there's no need to create a custom type for it.
     ( .. ) => { .. };
     ( $left:tt..$right:tt ) => { MyRange {
@@ -159,19 +159,19 @@ mod tests {
 
     #[test]
     fn test_from_right_macro() {
-        let idx = range!(^5);
+        let idx = idx!(^5);
         assert!(matches!(idx, RangeIndex::FromBack(5)));
     }
 
     #[test]
     fn test_from_left_macro() {
-        let idx = range!(5);
+        let idx = idx!(5);
         assert!(matches!(idx, RangeIndex::FromFront(5)));
     }
 
     #[test]
     fn test_range_macro() {
-        let idx = range!(2..^3);
+        let idx = idx!(2..^3);
         assert!(matches!(idx, MyRange {
             start: RangeIndex::FromFront(2),
             end: RangeIndex::FromBack(3),
@@ -181,18 +181,18 @@ mod tests {
     #[test]
     fn test_macro() {
         let vec: Vec<_> = (0..10).collect();
-        assert_eq!(vec[range!(2..^3)], [2, 3, 4, 5, 6]);
+        assert_eq!(vec[idx!(2..^3)], [2, 3, 4, 5, 6]);
     }
 
     #[test]
     fn test_homogeneous_macro_ranges() {
         // exercises that all these ranges can go in the `vec` together,
-        // that we didn't cut corners and return a `Range` for `range!(2..7)`
+        // that we didn't cut corners and return a `Range` for `idx!(2..7)`
         let ranges = vec![
-            range!(2..7),
-            range!(2..^3),
-            range!(^8..7),
-            range!(^8..^3),
+            idx!(2..7),
+            idx!(2..^3),
+            idx!(^8..7),
+            idx!(^8..^3),
         ];
         let vec: Vec<_> = (0..10).collect();
         for range in ranges {
@@ -202,6 +202,6 @@ mod tests {
 
     #[test]
     fn test_full_range() {
-        assert_eq!(range!(..), ..);
+        assert_eq!(idx!(..), ..);
     }
 }
