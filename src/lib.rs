@@ -248,6 +248,22 @@ macro_rules! idx {
         start: SeqIndex::FromBack($left),
         end: SeqIndex::FromBack($right),
     } };
+    ( ..$right:tt ) => { SeqRange {
+        start: Default::default(),
+        end: SeqIndex::FromFront($right),
+    } };
+    ( ..^$right:tt ) => { SeqRange {
+        start: Default::default(),
+        end: SeqIndex::FromBack($right),
+    } };
+    ( ..=$right:tt ) => { SeqRangeInclusive {
+        start: Default::default(),
+        end: SeqIndex::FromFront($right),
+    } };
+    ( ..=^$right:tt ) => { SeqRangeInclusive {
+        start: Default::default(),
+        end: SeqIndex::FromBack($right),
+    } };
     ( ^$x:expr ) => { SeqIndex::FromBack($x) };
     ( $x:expr ) => { SeqIndex::FromFront($x) };
 }
@@ -336,5 +352,17 @@ mod tests {
     fn test_string() {
         let s = "ranges".to_string();
         assert_eq!(&s[idx!(1..^2)], "ang");
+    }
+
+    #[test]
+    fn test_range_to() {
+        let vec: Vec<_> = (0..10).collect();
+        assert_eq!(vec[idx!(..^3)], [0, 1, 2, 3, 4, 5, 6]);
+    }
+
+    #[test]
+    fn test_range_to_incl() {
+        let vec: Vec<_> = (0..10).collect();
+        assert_eq!(vec[idx!(..=^3)], [0, 1, 2, 3, 4, 5, 6, 7]);
     }
 }
