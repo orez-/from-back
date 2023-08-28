@@ -2,48 +2,7 @@ use std::ops::*;
 
 // ===
 
-#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-pub struct SeqRange<Idx> {
-    pub start: SeqIndex<Idx>,
-    pub end: SeqIndex<Idx>,
-}
-
-impl SeqRange<usize> {
-    pub fn for_slice_len(&self, len: usize) -> Range<usize> {
-        self.start.for_slice_len(len)..self.end.for_slice_len(len)
-    }
-}
-
-// ===
-
-#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-pub struct SeqRangeFrom<Idx> {
-    pub start: SeqIndex<Idx>,
-}
-
-impl SeqRangeFrom<usize> {
-    pub fn for_slice_len(&self, len: usize) -> RangeFrom<usize> {
-        self.start.for_slice_len(len)..
-    }
-}
-
-// ===
-
-#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-pub struct SeqRangeInclusive<Idx> {
-    pub start: SeqIndex<Idx>,
-    pub end: SeqIndex<Idx>,
-}
-
-impl SeqRangeInclusive<usize> {
-    pub fn for_slice_len(&self, len: usize) -> RangeInclusive<usize> {
-        self.start.for_slice_len(len)..=self.end.for_slice_len(len)
-    }
-}
-
-// ===
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SeqIndex<Idx> {
     FromFront(Idx),
     FromBack(Idx),
@@ -67,10 +26,91 @@ where Idx: Default {
 
 // ===
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct SeqRange<Idx> {
+    pub start: SeqIndex<Idx>,
+    pub end: SeqIndex<Idx>,
+}
+
+impl SeqRange<usize> {
+    pub fn for_slice_len(&self, len: usize) -> Range<usize> {
+        self.start.for_slice_len(len)..self.end.for_slice_len(len)
+    }
+}
+
+// ===
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct SeqRangeFrom<Idx> {
+    pub start: SeqIndex<Idx>,
+}
+
+impl SeqRangeFrom<usize> {
+    pub fn for_slice_len(&self, len: usize) -> RangeFrom<usize> {
+        self.start.for_slice_len(len)..
+    }
+}
+
+// ===
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub struct SeqRangeInclusive<Idx> {
+    pub start: SeqIndex<Idx>,
+    pub end: SeqIndex<Idx>,
+}
+
+impl SeqRangeInclusive<usize> {
+    pub fn for_slice_len(&self, len: usize) -> RangeInclusive<usize> {
+        self.start.for_slice_len(len)..=self.end.for_slice_len(len)
+    }
+}
+
+// ===
+// Vec impls
+
+impl<T> Index<SeqIndex<usize>> for Vec<T> {
+    type Output = T;
+
+    fn index(&self, rng: SeqIndex<usize>) -> &T {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
 impl<T> Index<SeqRange<usize>> for Vec<T> {
     type Output = [T];
 
     fn index(&self, rng: SeqRange<usize>) -> &[T] {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl<T> Index<SeqRangeFrom<usize>> for Vec<T> {
+    type Output = [T];
+
+    fn index(&self, rng: SeqRangeFrom<usize>) -> &[T] {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl<T> Index<SeqRangeInclusive<usize>> for Vec<T> {
+    type Output = [T];
+
+    fn index(&self, rng: SeqRangeInclusive<usize>) -> &[T] {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+// ===
+// Slice impls
+
+impl<T> Index<SeqIndex<usize>> for [T] {
+    type Output = T;
+
+    fn index(&self, rng: SeqIndex<usize>) -> &T {
         let range = rng.for_slice_len(self.len());
         &self[range]
     }
@@ -84,6 +124,86 @@ impl<T> Index<SeqRange<usize>> for [T] {
         &self[range]
     }
 }
+
+impl<T> Index<SeqRangeFrom<usize>> for [T] {
+    type Output = [T];
+
+    fn index(&self, rng: SeqRangeFrom<usize>) -> &[T] {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl<T> Index<SeqRangeInclusive<usize>> for [T] {
+    type Output = [T];
+
+    fn index(&self, rng: SeqRangeInclusive<usize>) -> &[T] {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+// ===
+// str impls
+
+impl Index<SeqRange<usize>> for str {
+    type Output = str;
+
+    fn index(&self, rng: SeqRange<usize>) -> &str {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl Index<SeqRangeFrom<usize>> for str {
+    type Output = str;
+
+    fn index(&self, rng: SeqRangeFrom<usize>) -> &str {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl Index<SeqRangeInclusive<usize>> for str {
+    type Output = str;
+
+    fn index(&self, rng: SeqRangeInclusive<usize>) -> &str {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+// ===
+// String impls
+
+impl Index<SeqRange<usize>> for String {
+    type Output = str;
+
+    fn index(&self, rng: SeqRange<usize>) -> &str {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl Index<SeqRangeFrom<usize>> for String {
+    type Output = str;
+
+    fn index(&self, rng: SeqRangeFrom<usize>) -> &str {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+impl Index<SeqRangeInclusive<usize>> for String {
+    type Output = str;
+
+    fn index(&self, rng: SeqRangeInclusive<usize>) -> &str {
+        let range = rng.for_slice_len(self.len());
+        &self[range]
+    }
+}
+
+// ===
 
 #[macro_export]
 macro_rules! idx {
@@ -131,6 +251,8 @@ macro_rules! idx {
     ( ^$x:expr ) => { SeqIndex::FromBack($x) };
     ( $x:expr ) => { SeqIndex::FromFront($x) };
 }
+
+// ===
 
 #[cfg(test)]
 mod tests {
@@ -203,5 +325,16 @@ mod tests {
     #[test]
     fn test_full_range() {
         assert_eq!(idx!(..), ..);
+    }
+
+    #[test]
+    fn test_str() {
+        assert_eq!(&"ranges"[idx!(1..^2)], "ang");
+    }
+
+    #[test]
+    fn test_string() {
+        let s = "ranges".to_string();
+        assert_eq!(&s[idx!(1..^2)], "ang");
     }
 }
