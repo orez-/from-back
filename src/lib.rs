@@ -3,12 +3,12 @@ use std::ops::*;
 // ===
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-pub struct MyRange<Idx> {
-    pub start: RangeIndex<Idx>,
-    pub end: RangeIndex<Idx>,
+pub struct SeqRange<Idx> {
+    pub start: SeqIndex<Idx>,
+    pub end: SeqIndex<Idx>,
 }
 
-impl MyRange<usize> {
+impl SeqRange<usize> {
     pub fn for_slice_len(&self, len: usize) -> Range<usize> {
         self.start.for_slice_len(len)..self.end.for_slice_len(len)
     }
@@ -17,11 +17,11 @@ impl MyRange<usize> {
 // ===
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-pub struct MyRangeFrom<Idx> {
-    pub start: RangeIndex<Idx>,
+pub struct SeqRangeFrom<Idx> {
+    pub start: SeqIndex<Idx>,
 }
 
-impl MyRangeFrom<usize> {
+impl SeqRangeFrom<usize> {
     pub fn for_slice_len(&self, len: usize) -> RangeFrom<usize> {
         self.start.for_slice_len(len)..
     }
@@ -30,12 +30,12 @@ impl MyRangeFrom<usize> {
 // ===
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
-pub struct MyRangeInclusive<Idx> {
-    pub start: RangeIndex<Idx>,
-    pub end: RangeIndex<Idx>,
+pub struct SeqRangeInclusive<Idx> {
+    pub start: SeqIndex<Idx>,
+    pub end: SeqIndex<Idx>,
 }
 
-impl MyRangeInclusive<usize> {
+impl SeqRangeInclusive<usize> {
     pub fn for_slice_len(&self, len: usize) -> RangeInclusive<usize> {
         self.start.for_slice_len(len)..=self.end.for_slice_len(len)
     }
@@ -44,42 +44,42 @@ impl MyRangeInclusive<usize> {
 // ===
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum RangeIndex<Idx> {
+pub enum SeqIndex<Idx> {
     FromFront(Idx),
     FromBack(Idx),
 }
 
-impl RangeIndex<usize> {
+impl SeqIndex<usize> {
     fn for_slice_len(&self, len: usize) -> usize {
         match self {
-            &RangeIndex::FromFront(idx) => idx,
-            &RangeIndex::FromBack(idx) => len.checked_sub(idx).unwrap(),
+            &SeqIndex::FromFront(idx) => idx,
+            &SeqIndex::FromBack(idx) => len.checked_sub(idx).unwrap(),
         }
     }
 }
 
-impl<Idx> Default for RangeIndex<Idx>
+impl<Idx> Default for SeqIndex<Idx>
 where Idx: Default {
     fn default() -> Self {
-        RangeIndex::FromFront(Default::default())
+        SeqIndex::FromFront(Default::default())
     }
 }
 
 // ===
 
-impl<T> Index<MyRange<usize>> for Vec<T> {
+impl<T> Index<SeqRange<usize>> for Vec<T> {
     type Output = [T];
 
-    fn index(&self, rng: MyRange<usize>) -> &[T] {
+    fn index(&self, rng: SeqRange<usize>) -> &[T] {
         let range = rng.for_slice_len(self.len());
         &self[range]
     }
 }
 
-impl<T> Index<MyRange<usize>> for [T] {
+impl<T> Index<SeqRange<usize>> for [T] {
     type Output = [T];
 
-    fn index(&self, rng: MyRange<usize>) -> &[T] {
+    fn index(&self, rng: SeqRange<usize>) -> &[T] {
         let range = rng.for_slice_len(self.len());
         &self[range]
     }
@@ -90,46 +90,46 @@ macro_rules! idx {
     // we allow specifying a `idx!(..)` for completeness, but..
     // ..there's no need to create a custom type for it.
     ( .. ) => { .. };
-    ( $left:tt..$right:tt ) => { MyRange {
-        start: RangeIndex::FromFront($left),
-        end: RangeIndex::FromFront($right),
+    ( $left:tt..$right:tt ) => { SeqRange {
+        start: SeqIndex::FromFront($left),
+        end: SeqIndex::FromFront($right),
     } };
-    ( ^$left:tt..$right:tt ) => { MyRange {
-        start: RangeIndex::FromBack($left),
-        end: RangeIndex::FromFront($right),
+    ( ^$left:tt..$right:tt ) => { SeqRange {
+        start: SeqIndex::FromBack($left),
+        end: SeqIndex::FromFront($right),
     } };
-    ( $left:tt..^$right:tt ) => { MyRange {
-        start: RangeIndex::FromFront($left),
-        end: RangeIndex::FromBack($right),
+    ( $left:tt..^$right:tt ) => { SeqRange {
+        start: SeqIndex::FromFront($left),
+        end: SeqIndex::FromBack($right),
     } };
-    ( ^$left:tt..^$right:tt ) => { MyRange {
-        start: RangeIndex::FromBack($left),
-        end: RangeIndex::FromBack($right),
+    ( ^$left:tt..^$right:tt ) => { SeqRange {
+        start: SeqIndex::FromBack($left),
+        end: SeqIndex::FromBack($right),
     } };
-    ( $left:tt.. ) => { MyRangeFrom {
-        start: RangeIndex::FromFront($left),
+    ( $left:tt.. ) => { SeqRangeFrom {
+        start: SeqIndex::FromFront($left),
     } };
-    ( ^$left:tt.. ) => { MyRangeFrom {
-        start: RangeIndex::FromBack($left),
+    ( ^$left:tt.. ) => { SeqRangeFrom {
+        start: SeqIndex::FromBack($left),
     } };
-    ( $left:tt..=$right:tt ) => { MyRangeInclusive {
-        start: RangeIndex::FromFront($left),
-        end: RangeIndex::FromFront($right),
+    ( $left:tt..=$right:tt ) => { SeqRangeInclusive {
+        start: SeqIndex::FromFront($left),
+        end: SeqIndex::FromFront($right),
     } };
-    ( ^$left:tt..=$right:tt ) => { MyRangeInclusive {
-        start: RangeIndex::FromBack($left),
-        end: RangeIndex::FromFront($right),
+    ( ^$left:tt..=$right:tt ) => { SeqRangeInclusive {
+        start: SeqIndex::FromBack($left),
+        end: SeqIndex::FromFront($right),
     } };
-    ( $left:tt..=^$right:tt ) => { MyRangeInclusive {
-        start: RangeIndex::FromFront($left),
-        end: RangeIndex::FromBack($right),
+    ( $left:tt..=^$right:tt ) => { SeqRangeInclusive {
+        start: SeqIndex::FromFront($left),
+        end: SeqIndex::FromBack($right),
     } };
-    ( ^$left:tt..=^$right:tt ) => { MyRangeInclusive {
-        start: RangeIndex::FromBack($left),
-        end: RangeIndex::FromBack($right),
+    ( ^$left:tt..=^$right:tt ) => { SeqRangeInclusive {
+        start: SeqIndex::FromBack($left),
+        end: SeqIndex::FromBack($right),
     } };
-    ( ^$x:expr ) => { RangeIndex::FromBack($x) };
-    ( $x:expr ) => { RangeIndex::FromFront($x) };
+    ( ^$x:expr ) => { SeqIndex::FromBack($x) };
+    ( $x:expr ) => { SeqIndex::FromFront($x) };
 }
 
 #[cfg(test)]
@@ -138,9 +138,9 @@ mod tests {
 
     #[test]
     fn index_slice() {
-        let range = MyRange {
-            start: RangeIndex::FromFront(2),
-            end: RangeIndex::FromBack(3),
+        let range = SeqRange {
+            start: SeqIndex::FromFront(2),
+            end: SeqIndex::FromBack(3),
         };
         let vec: Vec<_> = (0..10).collect();
         let slice: &[_] = &vec;
@@ -149,9 +149,9 @@ mod tests {
 
     #[test]
     fn index_vec() {
-        let range = MyRange {
-            start: RangeIndex::FromFront(2),
-            end: RangeIndex::FromBack(3),
+        let range = SeqRange {
+            start: SeqIndex::FromFront(2),
+            end: SeqIndex::FromBack(3),
         };
         let vec: Vec<_> = (0..10).collect();
         assert_eq!(vec[range], [2, 3, 4, 5, 6]);
@@ -160,21 +160,21 @@ mod tests {
     #[test]
     fn test_from_right_macro() {
         let idx = idx!(^5);
-        assert!(matches!(idx, RangeIndex::FromBack(5)));
+        assert!(matches!(idx, SeqIndex::FromBack(5)));
     }
 
     #[test]
     fn test_from_left_macro() {
         let idx = idx!(5);
-        assert!(matches!(idx, RangeIndex::FromFront(5)));
+        assert!(matches!(idx, SeqIndex::FromFront(5)));
     }
 
     #[test]
     fn test_range_macro() {
         let idx = idx!(2..^3);
-        assert!(matches!(idx, MyRange {
-            start: RangeIndex::FromFront(2),
-            end: RangeIndex::FromBack(3),
+        assert!(matches!(idx, SeqRange {
+            start: SeqIndex::FromFront(2),
+            end: SeqIndex::FromBack(3),
         }), "{idx:?}");
     }
 
