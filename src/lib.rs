@@ -9,7 +9,7 @@ pub enum SeqIndex<Idx> {
 }
 
 impl SeqIndex<usize> {
-    fn for_slice_len(&self, len: usize) -> usize {
+    pub fn for_seq_len(&self, len: usize) -> usize {
         match self {
             &SeqIndex::FromFront(idx) => idx,
             &SeqIndex::FromBack(idx) => len.checked_sub(idx).unwrap(),
@@ -33,8 +33,8 @@ pub struct SeqRange<Idx> {
 }
 
 impl SeqRange<usize> {
-    pub fn for_slice_len(&self, len: usize) -> Range<usize> {
-        self.start.for_slice_len(len)..self.end.for_slice_len(len)
+    pub fn for_seq_len(&self, len: usize) -> Range<usize> {
+        self.start.for_seq_len(len)..self.end.for_seq_len(len)
     }
 }
 
@@ -46,8 +46,8 @@ pub struct SeqRangeFrom<Idx> {
 }
 
 impl SeqRangeFrom<usize> {
-    pub fn for_slice_len(&self, len: usize) -> RangeFrom<usize> {
-        self.start.for_slice_len(len)..
+    pub fn for_seq_len(&self, len: usize) -> RangeFrom<usize> {
+        self.start.for_seq_len(len)..
     }
 }
 
@@ -60,8 +60,8 @@ pub struct SeqRangeInclusive<Idx> {
 }
 
 impl SeqRangeInclusive<usize> {
-    pub fn for_slice_len(&self, len: usize) -> RangeInclusive<usize> {
-        self.start.for_slice_len(len)..=self.end.for_slice_len(len)
+    pub fn for_seq_len(&self, len: usize) -> RangeInclusive<usize> {
+        self.start.for_seq_len(len)..=self.end.for_seq_len(len)
     }
 }
 
@@ -72,7 +72,7 @@ impl<T> Index<SeqIndex<usize>> for Vec<T> {
     type Output = T;
 
     fn index(&self, rng: SeqIndex<usize>) -> &T {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -81,7 +81,7 @@ impl<T> Index<SeqRange<usize>> for Vec<T> {
     type Output = [T];
 
     fn index(&self, rng: SeqRange<usize>) -> &[T] {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -90,7 +90,7 @@ impl<T> Index<SeqRangeFrom<usize>> for Vec<T> {
     type Output = [T];
 
     fn index(&self, rng: SeqRangeFrom<usize>) -> &[T] {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -99,7 +99,7 @@ impl<T> Index<SeqRangeInclusive<usize>> for Vec<T> {
     type Output = [T];
 
     fn index(&self, rng: SeqRangeInclusive<usize>) -> &[T] {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -111,7 +111,7 @@ impl<T> Index<SeqIndex<usize>> for [T] {
     type Output = T;
 
     fn index(&self, rng: SeqIndex<usize>) -> &T {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -120,7 +120,7 @@ impl<T> Index<SeqRange<usize>> for [T] {
     type Output = [T];
 
     fn index(&self, rng: SeqRange<usize>) -> &[T] {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -129,7 +129,7 @@ impl<T> Index<SeqRangeFrom<usize>> for [T] {
     type Output = [T];
 
     fn index(&self, rng: SeqRangeFrom<usize>) -> &[T] {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -138,7 +138,7 @@ impl<T> Index<SeqRangeInclusive<usize>> for [T] {
     type Output = [T];
 
     fn index(&self, rng: SeqRangeInclusive<usize>) -> &[T] {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -150,7 +150,7 @@ impl Index<SeqRange<usize>> for str {
     type Output = str;
 
     fn index(&self, rng: SeqRange<usize>) -> &str {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -159,7 +159,7 @@ impl Index<SeqRangeFrom<usize>> for str {
     type Output = str;
 
     fn index(&self, rng: SeqRangeFrom<usize>) -> &str {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -168,7 +168,7 @@ impl Index<SeqRangeInclusive<usize>> for str {
     type Output = str;
 
     fn index(&self, rng: SeqRangeInclusive<usize>) -> &str {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -180,7 +180,7 @@ impl Index<SeqRange<usize>> for String {
     type Output = str;
 
     fn index(&self, rng: SeqRange<usize>) -> &str {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -189,7 +189,7 @@ impl Index<SeqRangeFrom<usize>> for String {
     type Output = str;
 
     fn index(&self, rng: SeqRangeFrom<usize>) -> &str {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
@@ -198,7 +198,7 @@ impl Index<SeqRangeInclusive<usize>> for String {
     type Output = str;
 
     fn index(&self, rng: SeqRangeInclusive<usize>) -> &str {
-        let range = rng.for_slice_len(self.len());
+        let range = rng.for_seq_len(self.len());
         &self[range]
     }
 }
