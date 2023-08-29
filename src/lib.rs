@@ -19,6 +19,27 @@
 //! // slice the elements two from the front to three from the back (inclusive)
 //! assert_eq!(&vec[idx!(2..=^3)], &[7, 5, 3]);
 //! ```
+//!
+//! # Note
+//!
+//! Largely, the structs provided by this library only work via the [`Index`] trait,
+//! ie square bracket access: `vec[idx!(2..^3)]`. Other methods which accept
+//! an index or a Range of indices will not accept these structs. This is
+//! because the [`std::slice::SliceIndex`] trait is `Sealed`; in userspace, we are not
+//! allowed to implement `SliceIndex`.
+//!
+//! It is probably simpler to do your own subtraction in these cases, but
+//! if you still prefer to leverage this library, you can call `for_seq_len`
+//! to generate a native index or Range:
+//!
+//! ```rust
+//! # use from_back::idx;
+//! let vec = vec![8, 6, 7, 5, 3, 0, 9];
+//! let range = idx!(2..^2).for_seq_len(vec.len());
+//! let expected: &[_] = &[7, 5, 3];
+//! assert_eq!(range, 2..5);
+//! assert_eq!(vec.get(range), Some(expected));
+//! ```
 
 use std::ops::*;
 
